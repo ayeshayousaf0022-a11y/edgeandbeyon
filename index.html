@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDGE — The Weekender Duffel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Jost:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#241a13;
+    --coffee:#4a3527;
+    --chestnut:#7a5a3f;
+    --sand:#dcc9a8;
+    --cream:#f4ecdd;
+    --paper:#faf6ee;
+    --brass:#a37f3f;
+    --brass-light:#cfa961;
+    --ink:#241a13;
+    --line: rgba(36,26,19,0.14);
+    --max: 1180px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+    color:var(--espresso);
+    margin:0;
+  }
+  .mono{font-family:'Space Mono', monospace; letter-spacing:0.02em;}
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 28px;}
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit; cursor:pointer;}
+
+  /* grained leather placeholder panels */
+  .swatch{
+    position:relative;
+    background:
+      radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,0.10), transparent 55%),
+      linear-gradient(155deg, var(--coffee) 0%, var(--espresso) 70%);
+    border-radius:14px;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  .swatch::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    opacity:0.5;
+  }
+  .swatch::after{
+    content:"";
+    position:absolute; inset:0;
+    box-shadow: inset 0 0 90px rgba(0,0,0,0.45);
+  }
+  .swatch .tag{
+    position:absolute; left:16px; bottom:16px; z-index:2;
+    background:rgba(244,236,221,0.92);
+    color:var(--espresso);
+    padding:6px 12px;
+    border-radius:100px;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  .swatch.light{
+    background:
+      radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,0.5), transparent 55%),
+      linear-gradient(155deg, var(--sand) 0%, #b99b71 75%);
+  }
+
+  /* ANNOUNCEMENT */
+  .announce{
+    background:var(--espresso); color:var(--cream);
+    text-align:center; font-size:12.5px; letter-spacing:0.08em;
+    padding:10px 16px; text-transform:uppercase;
+  }
+  .announce b{color:var(--brass-light); font-weight:500;}
+
+  /* HEADER */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(250,246,238,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+  }
+  .logo{font-family:'Fraunces', serif; font-size:22px; letter-spacing:0.04em; font-weight:600;}
+  .navlinks{display:flex; gap:32px; font-size:14px; list-style:none; margin:0; padding:0;}
+  .navlinks a{text-decoration:none; opacity:0.75; transition:opacity .2s;}
+  .navlinks a:hover{opacity:1;}
+  .navcart{display:flex; align-items:center; gap:18px; font-size:13px;}
+  .cart-btn{
+    border:1px solid var(--espresso); background:none; border-radius:100px;
+    padding:9px 18px; font-size:13px; display:flex; align-items:center; gap:8px;
+  }
+  .navtoggle{display:none; background:none; border:none;}
+
+  /* HERO */
+  .hero{
+    display:grid; grid-template-columns:1fr 1fr; gap:56px;
+    align-items:center; padding:64px 0 40px;
+  }
+  .eyebrow{
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--brass); margin-bottom:18px; display:block;
+  }
+  .hero h1{font-size:clamp(38px,4.6vw,58px); line-height:1.03;}
+  .hero h1 em{font-style:italic; color:var(--chestnut);}
+  .hero p.lead{
+    font-size:17px; line-height:1.65; color:#4d4038; max-width:440px; margin:22px 0 28px;
+  }
+  .price-row{display:flex; align-items:baseline; gap:12px; margin-bottom:28px;}
+  .price-now{font-family:'Fraunces',serif; font-size:32px; font-weight:600;}
+  .price-was{font-size:15px; text-decoration:line-through; opacity:0.4;}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    border-radius:100px; padding:16px 30px; font-size:14.5px; letter-spacing:0.03em;
+    border:1px solid var(--espresso); text-align:center; transition:all .2s ease; font-weight:400;
+  }
+  .btn-primary{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+  .btn-primary:hover{background:var(--coffee);}
+  .btn-outline{background:transparent; color:var(--espresso);}
+  .btn-outline:hover{background:var(--espresso); color:var(--cream);}
+  .rating-line{display:flex; align-items:center; gap:10px; margin-top:22px; font-size:13.5px; color:#5a4d43;}
+  .stars{color:var(--brass); letter-spacing:2px;}
+
+  .hero-visual{position:relative;}
+  .hero-visual .swatch{height:520px;}
+  .hero-thumbs{display:flex; gap:10px; margin-top:12px;}
+  .hero-thumbs .swatch{height:84px; flex:1; border-radius:10px;}
+
+  /* TRUST STRIP */
+  .trust{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:22px 0;
+  }
+  .trust ul{
+    display:flex; justify-content:space-between; list-style:none; margin:0; padding:0;
+    flex-wrap:wrap; gap:16px; font-size:12.5px; letter-spacing:0.03em; color:#5a4d43;
+    text-align:center;
+  }
+  .trust li{flex:1; min-width:140px;}
+  .trust b{display:block; color:var(--espresso); font-family:'Fraunces',serif; font-size:14px; font-weight:500; margin-bottom:2px;}
+
+  /* SECTION HEADS */
+  .section{padding:88px 0;}
+  .section-head{text-align:center; max-width:600px; margin:0 auto 48px;}
+  .section-head .eyebrow{display:block; text-align:center;}
+  .section-head h2{font-size:clamp(28px,3.4vw,40px);}
+  .section-head p{color:#5a4d43; margin-top:14px; font-size:15.5px; line-height:1.6;}
+
+  /* GALLERY */
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  }
+  .gallery-grid .swatch{height:280px;}
+  .gallery-grid .swatch:nth-child(1){grid-column:span 2; grid-row:span 2; height:100%;}
+
+  /* FOUNDATION KIT (signature) */
+  .kit-section{
+    background:var(--espresso); color:var(--cream); border-radius:28px;
+    padding:64px 40px; margin:0 28px;
+  }
+  .kit-section .section-head h2, .kit-section .section-head p{color:var(--cream);}
+  .kit-section .section-head p{color:#d6c6b0;}
+  .kit-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:22px; max-width:900px; margin:0 auto;
+  }
+  .kit-tag{
+    position:relative;
+    background:linear-gradient(160deg,#3a2b20,#2b2018);
+    border:1px dashed rgba(207,169,97,0.4);
+    border-radius:16px;
+    padding:30px 20px 24px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .kit-tag:hover{transform:translateY(-4px);}
+  .kit-tag .hole{
+    width:14px; height:14px; border-radius:50%;
+    background:#1a130d; border:2px solid var(--brass-light);
+    margin:0 auto 16px;
+  }
+  .kit-tag .kit-icon{font-size:26px; margin-bottom:14px;}
+  .kit-tag h3{font-family:'Fraunces',serif; font-size:17px; color:var(--cream); font-weight:500;}
+  .kit-tag p{font-size:12.5px; color:#b9a68d; margin-top:6px; line-height:1.5;}
+  .kit-tag .check{
+    position:absolute; top:14px; right:14px;
+    width:22px; height:22px; border-radius:50%;
+    border:1.5px solid rgba(207,169,97,0.5);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:transparent;
+  }
+  .kit-tag.selected{
+    border-color:var(--brass-light); border-style:solid;
+    background:linear-gradient(160deg,#4a3527,#2f2317);
+  }
+  .kit-tag.selected .check{background:var(--brass-light); color:var(--espresso);}
+  .kit-note{text-align:center; margin-top:26px; font-size:13px; color:#b9a68d;}
+  .kit-note b{color:var(--brass-light);}
+
+  /* FEATURES */
+  .features-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:28px;
+  }
+  .feature{text-align:left;}
+  .feature .num{font-family:'Space Mono',monospace; font-size:12px; color:var(--brass); display:block; margin-bottom:14px;}
+  .feature h3{font-size:18px; margin-bottom:8px;}
+  .feature p{font-size:14px; color:#5a4d43; line-height:1.6;}
+
+  /* REVIEWS */
+  .reviews-top{display:flex; align-items:center; gap:24px; justify-content:center; margin-bottom:44px;}
+  .score{font-family:'Fraunces',serif; font-size:44px; font-weight:600;}
+  .reviews-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .review-card{
+    background:var(--cream); border-radius:16px; padding:26px; border:1px solid var(--line);
+  }
+  .review-card .stars{display:block; margin-bottom:14px; font-size:14px;}
+  .review-card p{font-size:14.5px; line-height:1.65; color:#3a2f27;}
+  .review-card .who{margin-top:16px; font-size:12.5px; color:#8a7a68; letter-spacing:0.03em;}
+
+  /* SHIP/RETURN */
+  .info-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .info-card{
+    border:1px solid var(--line); border-radius:16px; padding:32px; background:var(--cream);
+  }
+  .info-card h3{font-size:19px; margin-bottom:12px;}
+  .info-card ul{margin:0; padding-left:18px; font-size:14.5px; line-height:1.9; color:#4d4038;}
+
+  /* FAQ */
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; background:none; border:none; text-align:left;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:22px 4px; font-size:16px; font-family:'Fraunces',serif; color:var(--espresso);
+  }
+  .faq-q .plus{font-size:20px; color:var(--brass); transition:transform .2s;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{padding:0 4px 22px; font-size:14.5px; color:#5a4d43; line-height:1.7; max-width:640px;}
+
+  /* NEWSLETTER */
+  .newsletter{
+    background:var(--sand); border-radius:24px; padding:56px 40px; text-align:center; margin:0 28px;
+  }
+  .newsletter h2{font-size:28px;}
+  .newsletter p{color:#5a4738; margin:12px 0 26px; font-size:14.5px;}
+  .nform{display:flex; max-width:420px; margin:0 auto; gap:10px;}
+  .nform input{
+    flex:1; padding:14px 18px; border-radius:100px; border:1px solid var(--espresso);
+    background:var(--paper); font-family:'Jost',sans-serif; font-size:14px;
+  }
+  .nform button{
+    background:var(--espresso); color:var(--cream); border:none; border-radius:100px;
+    padding:14px 26px; font-size:14px; white-space:nowrap;
+  }
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line); padding:56px 0 30px; font-size:13px; color:#6d6053;}
+  .foot-grid{display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:40px;}
+  .foot-grid h4{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--espresso); margin-bottom:14px; font-weight:500;}
+  .foot-grid ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px;}
+  .foot-grid a{text-decoration:none; opacity:0.8;}
+  .foot-bottom{display:flex; justify-content:space-between; padding-top:24px; border-top:1px solid var(--line); flex-wrap:wrap; gap:10px;}
+
+  /* MOBILE STICKY BAR */
+  .sticky-bar{
+    position:fixed; bottom:0; left:0; right:0; z-index:60;
+    background:rgba(250,246,238,0.96); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:none; align-items:center; justify-content:space-between;
+    padding:12px 20px;
+  }
+  .sticky-bar .price-now{font-size:20px;}
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--espresso); color:var(--cream); padding:12px 22px; border-radius:100px;
+    font-size:13.5px; opacity:0; pointer-events:none; transition:all .3s ease; z-index:70;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  @media (max-width: 900px){
+    .navlinks, .navcart .rating-line{display:none;}
+    .hero{grid-template-columns:1fr; padding-top:36px;}
+    .hero-visual{order:-1;}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .gallery-grid .swatch:nth-child(1){grid-column:span 2; grid-row:span 1; height:280px;}
+    .kit-grid{grid-template-columns:1fr;}
+    .features-grid{grid-template-columns:repeat(2,1fr);}
+    .reviews-grid{grid-template-columns:1fr;}
+    .info-grid{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    .trust ul{justify-content:flex-start;}
+    .sticky-bar{display:flex;}
+    body{padding-bottom:76px;}
+    .kit-section, .newsletter{margin:0 14px; padding:44px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="announce">Complimentary <b>Foundation Kit</b> with every duffel — Free UK &amp; EU shipping over £150</div>
+
+<header>
+  <div class="nav wrap">
+    <div class="logo">EDGE</div>
+    <ul class="navlinks">
+      <li><a href="#gallery">The Duffel</a></li>
+      <li><a href="#kit">Foundation Kit</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="navcart">
+      <span class="rating-line"><span class="stars">★★★★★</span> 4.9/5</span>
+      <button class="cart-btn">Cart · <span id="cart-count">0</span></button>
+    </div>
+  </div>
+</header>
+
+<section class="wrap hero">
+  <div class="hero-copy">
+    <span class="eyebrow">The Weekender — No. 04</span>
+    <h1>Carry it like<br><em>you built it.</em></h1>
+    <p class="lead">Full-grain leather, brass hardware, and a shape that hasn't changed in three years because it never needed to. Built for the overnight bag that becomes the only bag.</p>
+    <div class="price-row">
+      <span class="price-now">£245</span>
+      <span class="price-was mono">£295</span>
+    </div>
+    <div class="cta-row">
+      <button class="btn btn-primary" onclick="addToCart()">Add to Cart</button>
+      <button class="btn btn-outline" onclick="buyNow()">Buy Now</button>
+    </div>
+    <div class="rating-line"><span class="stars">★★★★★</span> 1,284 reviews · Handcrafted, made to order</div>
+  </div>
+  <div class="hero-visual">
+    <div class="swatch"><span class="tag">Espresso — Front</span></div>
+    <div class="hero-thumbs">
+      <div class="swatch"><span class="tag" style="font-size:9px;padding:4px 8px;">Back</span></div>
+      <div class="swatch"><span class="tag" style="font-size:9px;padding:4px 8px;">Interior</span></div>
+      <div class="swatch"><span class="tag" style="font-size:9px;padding:4px 8px;">Side</span></div>
+      <div class="swatch"><span class="tag" style="font-size:9px;padding:4px 8px;">Detail</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="trust wrap">
+  <ul>
+    <li><b>Full-Grain Leather</b>Hand-selected hide</li>
+    <li><b>Free Shipping</b>UK &amp; EU, over £150</li>
+    <li><b>30-Day Returns</b>No questions asked</li>
+    <li><b>Secure Checkout</b>Encrypted payment</li>
+    <li><b>Lifetime Warranty</b>On stitching &amp; hardware</li>
+  </ul>
+</div>
+
+<section class="section wrap" id="gallery">
+  <div class="section-head">
+    <span class="eyebrow">Gallery</span>
+    <h2>Every angle, considered.</h2>
+    <p>Photographed in natural light to show true leather grain, brass patina, and true-to-size proportions.</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="swatch"><span class="tag">Front view</span></div>
+    <div class="swatch"><span class="tag">Rear panel</span></div>
+    <div class="swatch"><span class="tag">Open interior</span></div>
+    <div class="swatch light"><span class="tag">Side profile</span></div>
+    <div class="swatch light"><span class="tag">Shoe compartment</span></div>
+  </div>
+</section>
+
+<section class="section" id="kit">
+  <div class="wrap">
+    <div class="kit-section">
+      <div class="section-head">
+        <span class="eyebrow" style="color:var(--brass-light);">Included, free</span>
+        <h2>Your Foundation Kit</h2>
+        <p>Every duffel ships with one complimentary piece from our leather goods line. Choose the one that suits you — swap it any time before checkout.</p>
+      </div>
+      <div class="kit-grid">
+        <div class="kit-tag selected" data-kit="pouch" onclick="selectKit(this)">
+          <span class="check">✓</span>
+          <div class="hole"></div>
+          <div class="kit-icon">◈</div>
+          <h3>Leather Pouch</h3>
+          <p>A slim companion pouch for chargers, cufflinks or a passport.</p>
+        </div>
+        <div class="kit-tag" data-kit="tag" onclick="selectKit(this)">
+          <span class="check">✓</span>
+          <div class="hole"></div>
+          <div class="kit-icon">◇</div>
+          <h3>Customised Leather Tag</h3>
+          <p>Brass-edged luggage tag, hand-stamped with initials of your choice.</p>
+        </div>
+        <div class="kit-tag" data-kit="keychain" onclick="selectKit(this)">
+          <span class="check">✓</span>
+          <div class="hole"></div>
+          <div class="kit-icon">◐</div>
+          <h3>Leather Keychain</h3>
+          <p>A matching offcut keychain finished with the same brass hardware.</p>
+        </div>
+      </div>
+      <p class="kit-note">Selected: <b id="kit-selected-label">Leather Pouch</b> — added automatically at checkout, no code needed.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head">
+    <span class="eyebrow">Why it lasts</span>
+    <h2>Built the slow way.</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature">
+      <span class="num mono">01</span>
+      <h3>Full-Grain Hide</h3>
+      <p>Sourced from a single tannery, left un-corrected so the grain ages into the leather rather than off it.</p>
+    </div>
+    <div class="feature">
+      <span class="num mono">02</span>
+      <h3>Solid Brass Hardware</h3>
+      <p>Zips, rings and clasps in solid brass — it dulls to a warm patina, never rusts.</p>
+    </div>
+    <div class="feature">
+      <span class="num mono">03</span>
+      <h3>48-Hour Carry</h3>
+      <p>42-litre capacity with a dedicated shoe compartment. Fits under most airline seats.</p>
+    </div>
+    <div class="feature">
+      <span class="num mono">04</span>
+      <h3>Made to Order</h3>
+      <p>Each bag is cut and stitched after you order — nothing sits in a warehouse.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" id="reviews">
+  <div class="reviews-top">
+    <span class="score">4.9</span>
+    <div>
+      <span class="stars" style="font-size:18px;">★★★★★</span>
+      <p style="margin:4px 0 0; font-size:13.5px; color:#5a4d43;">Based on 1,284 verified reviews</p>
+    </div>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <span class="stars">★★★★★</span>
+      <p>Three years of weekly flights and the leather just keeps looking better. The brass hardware has aged beautifully.</p>
+      <div class="who">— James H., verified buyer</div>
+    </div>
+    <div class="review-card">
+      <span class="stars">★★★★★</span>
+      <p>Ordered the tag as my Foundation Kit piece — the hand-stamped initials were a lovely touch nobody else does.</p>
+      <div class="who">— Priya M., verified buyer</div>
+    </div>
+    <div class="review-card">
+      <span class="stars">★★★★★</span>
+      <p>Heavier than I expected in a good way — feels like a bag you hand down, not replace.</p>
+      <div class="who">— Daniel O., verified buyer</div>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>Shipping</h3>
+      <ul>
+        <li>Free UK &amp; EU shipping on orders over £150</li>
+        <li>Standard delivery: 3–5 working days</li>
+        <li>Made-to-order pieces: 7–10 working days</li>
+        <li>Express next-day available at checkout</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>Returns &amp; Warranty</h3>
+      <ul>
+        <li>30-day free returns, unused and tagged</li>
+        <li>Lifetime warranty on stitching and hardware</li>
+        <li>Repairs and re-conditioning available always</li>
+        <li>Exchanges processed within 48 hours of receipt</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" id="faq">
+  <div class="section-head">
+    <span class="eyebrow">Questions</span>
+    <h2>Before you order</h2>
+  </div>
+  <div style="max-width:720px; margin:0 auto;">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Which Foundation Kit item should I choose? <span class="plus">+</span></button>
+      <div class="faq-a"><p>Most first-time buyers choose the pouch for everyday use, while returning customers often pick the tag to personalise a second bag. You can change your selection any time before checkout.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Is the leather genuine full-grain? <span class="plus">+</span></button>
+      <div class="faq-a"><p>Yes — every panel is cut from full-grain hide, left untreated so the natural grain and any small markings remain visible and deepen in colour with wear.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Does it fit airline carry-on sizing? <span class="plus">+</span></button>
+      <div class="faq-a"><p>Yes, the duffel measures within standard carry-on allowances for most major airlines and fits comfortably under the seat in front of you.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">How do I care for the leather over time? <span class="plus">+</span></button>
+      <div class="faq-a"><p>Wipe with a dry cloth after use and condition every few months with a natural leather balm. Avoid prolonged direct sunlight and standing water.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="newsletter">
+    <h2>Join the mailing list</h2>
+    <p>New leather colours, early access, and care guides — no more than twice a month.</p>
+    <form class="nform" onsubmit="return subscribe(event)">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:12px;">EDGE</div>
+        <p style="max-width:280px; line-height:1.6; opacity:0.8;">Leather goods made to be used, not preserved. Designed in small batches, built to outlast the trip.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul><li><a href="#gallery">The Duffel</a></li><li><a href="#kit">Foundation Kit</a></li><li><a href="#">Care Kit</a></li></ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul><li><a href="#faq">FAQ</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li></ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul><li><a href="#">Our Story</a></li><li><a href="#">Contact</a></li><li><a href="#">Reviews</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 EDGE Leather Goods. All rights reserved.</span>
+      <span>Prices shown in GBP (£) · Secure checkout</span>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky-bar">
+  <div>
+    <div class="price-now">£245</div>
+    <div style="font-size:11px; color:#8a7a68;">Free shipping over £150</div>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-outline" style="padding:12px 18px;" onclick="addToCart()">Add</button>
+    <button class="btn btn-primary" style="padding:12px 18px;" onclick="buyNow()">Buy Now</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let selectedKit = "Leather Pouch";
+  let cartCount = 0;
+
+  function selectKit(el){
+    document.querySelectorAll('.kit-tag').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedKit = el.querySelector('h3').textContent;
+    document.getElementById('kit-selected-label').textContent = selectedKit;
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  function addToCart(){
+    cartCount++;
+    document.getElementById('cart-count').textContent = cartCount;
+    showToast('Added to cart — with your ' + selectedKit);
+  }
+
+  function buyNow(){
+    showToast('Heading to checkout — ' + selectedKit + ' included');
+  }
+
+  function subscribe(e){
+    e.preventDefault();
+    showToast('Subscribed — welcome to EDGE');
+    e.target.reset();
+    return false;
+  }
+
+  function toggleFaq(btn){
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-a');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-a').style.maxHeight = null;
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  }
+</script>
+
+</body>
+</html>
