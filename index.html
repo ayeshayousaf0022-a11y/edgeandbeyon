@@ -280,6 +280,72 @@
   .foot-grid a{text-decoration:none; opacity:0.8;}
   .foot-bottom{display:flex; justify-content:space-between; padding-top:24px; border-top:1px solid var(--line); flex-wrap:wrap; gap:10px;}
 
+  /* CART DRAWER */
+  .cart-overlay{
+    position:fixed; inset:0; background:rgba(36,26,19,0.45);
+    opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:80;
+  }
+  .cart-overlay.open{opacity:1; pointer-events:auto;}
+  .cart-drawer{
+    position:fixed; top:0; right:0; bottom:0; width:420px; max-width:92vw;
+    background:var(--paper); z-index:81;
+    transform:translateX(100%); transition:transform .4s cubic-bezier(.22,.68,0,1.01);
+    display:flex; flex-direction:column;
+    box-shadow:-20px 0 60px rgba(36,26,19,0.18);
+  }
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 26px; border-bottom:1px solid var(--line);
+  }
+  .cart-head h3{font-size:19px;}
+  .cart-close{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
+    background:none; display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .cart-close:hover{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+  .cart-body{flex:1; overflow-y:auto; padding:10px 26px;}
+  .cart-empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; text-align:center; color:#8a7a68; gap:14px; padding:40px 0;
+  }
+  .cart-empty .kit-icon{font-size:30px; color:var(--brass);}
+  .cart-item{
+    display:grid; grid-template-columns:74px 1fr auto; gap:14px;
+    padding:20px 0; border-bottom:1px solid var(--line);
+  }
+  .cart-item .swatch{width:74px; height:74px; border-radius:10px;}
+  .ci-name{font-family:'Fraunces',serif; font-size:15px; color:var(--espresso); margin-bottom:2px;}
+  .ci-meta{font-size:12px; color:#8a7a68; margin-bottom:10px;}
+  .qty-row{display:flex; align-items:center; gap:0; width:fit-content; border:1px solid var(--line); border-radius:100px;}
+  .qty-row button{
+    width:26px; height:26px; background:none; border:none; font-size:14px; color:var(--espresso);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .qty-row span{font-size:13px; min-width:20px; text-align:center; font-family:'Space Mono',monospace;}
+  .ci-right{display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between;}
+  .ci-price{font-family:'Fraunces',serif; font-size:15px; color:var(--espresso);}
+  .ci-remove{
+    background:none; border:none; font-size:11.5px; color:#a15b3f; text-decoration:underline;
+    letter-spacing:0.02em; padding:0;
+  }
+  .cart-foot{border-top:1px solid var(--line); padding:20px 26px 26px; background:var(--cream);}
+  .cart-row{display:flex; justify-content:space-between; font-size:14px; color:#5a4d43; margin-bottom:8px;}
+  .cart-row.total{
+    font-family:'Fraunces',serif; font-size:19px; color:var(--espresso);
+    margin:14px 0 18px; padding-top:14px; border-top:1px dashed var(--line);
+  }
+  .cart-row.total .mono{font-size:19px;}
+  .checkout-btn{
+    width:100%; padding:17px; border-radius:100px; border:none;
+    background:var(--espresso); color:var(--cream); font-size:15px; letter-spacing:0.03em;
+  }
+  .checkout-btn:hover{background:var(--coffee);}
+  .cart-ship-note{text-align:center; font-size:11.5px; color:#8a7a68; margin-top:12px;}
+  @media (max-width: 480px){
+    .cart-drawer{width:100vw; max-width:100vw;}
+  }
+
   /* MOBILE STICKY BAR */
   .sticky-bar{
     position:fixed; bottom:0; left:0; right:0; z-index:60;
@@ -329,7 +395,7 @@
     </ul>
     <div class="navcart">
       <span class="rating-line"><span class="stars">★★★★★</span> 4.9/5</span>
-      <button class="cart-btn">Cart · <span id="cart-count">0</span></button>
+      <button class="cart-btn" onclick="openCart()">Cart · <span id="cart-count">0</span></button>
     </div>
   </div>
 </header>
@@ -574,11 +640,30 @@
   </div>
 </div>
 
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head">
+    <h3>Your Bag</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <!-- cart items render here -->
+  </div>
+  <div class="cart-foot">
+    <div class="cart-row"><span>Subtotal</span><span class="mono" id="cart-subtotal">£0.00</span></div>
+    <div class="cart-row"><span>Shipping</span><span id="cart-shipping">Calculated at checkout</span></div>
+    <div class="cart-row total"><span>Total</span><span class="mono" id="cart-total">£0.00</span></div>
+    <button class="checkout-btn" onclick="checkout()">Checkout</button>
+    <p class="cart-ship-note">Free UK &amp; EU shipping over £150 · Foundation Kit item included free</p>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+  const PRODUCT = { id:'duffel-espresso', name:'The Weekender Duffel', variant:'Espresso Leather', price:245 };
   let selectedKit = "Leather Pouch";
-  let cartCount = 0;
+  let cart = []; // {id, name, variant, price, qty, kit}
 
   function selectKit(el){
     document.querySelectorAll('.kit-tag').forEach(t => t.classList.remove('selected'));
@@ -594,14 +679,104 @@
     setTimeout(()=> t.classList.remove('show'), 2200);
   }
 
+  function fmt(n){
+    return '£' + n.toFixed(2);
+  }
+
   function addToCart(){
-    cartCount++;
-    document.getElementById('cart-count').textContent = cartCount;
-    showToast('Added to cart — with your ' + selectedKit);
+    const existing = cart.find(i => i.id === PRODUCT.id && i.kit === selectedKit);
+    if(existing){
+      existing.qty++;
+    } else {
+      cart.push({ id:PRODUCT.id, name:PRODUCT.name, variant:PRODUCT.variant, price:PRODUCT.price, qty:1, kit:selectedKit });
+    }
+    renderCart();
+    showToast('Added to bag — with your ' + selectedKit);
+    openCart();
   }
 
   function buyNow(){
-    showToast('Heading to checkout — ' + selectedKit + ' included');
+    addToCart();
+    setTimeout(checkout, 350);
+  }
+
+  function changeQty(index, delta){
+    cart[index].qty += delta;
+    if(cart[index].qty <= 0){
+      cart.splice(index, 1);
+    }
+    renderCart();
+  }
+
+  function removeItem(index){
+    cart.splice(index, 1);
+    renderCart();
+    showToast('Removed from bag');
+  }
+
+  function cartTotals(){
+    const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+    const qtyCount = cart.reduce((sum, i) => sum + i.qty, 0);
+    return { subtotal, qtyCount };
+  }
+
+  function renderCart(){
+    const body = document.getElementById('cart-body');
+    const { subtotal, qtyCount } = cartTotals();
+    document.getElementById('cart-count').textContent = qtyCount;
+
+    if(cart.length === 0){
+      body.innerHTML = `<div class="cart-empty">
+        <div class="kit-icon">◈</div>
+        <div>Your bag is empty.</div>
+        <p style="font-size:13px; max-width:220px;">Add the Weekender Duffel to see it here.</p>
+      </div>`;
+    } else {
+      body.innerHTML = cart.map((item, idx) => `
+        <div class="cart-item">
+          <div class="swatch"></div>
+          <div>
+            <div class="ci-name">${item.name}</div>
+            <div class="ci-meta">${item.variant} · Kit: ${item.kit}</div>
+            <div class="qty-row">
+              <button onclick="changeQty(${idx}, -1)" aria-label="Decrease quantity">−</button>
+              <span>${item.qty}</span>
+              <button onclick="changeQty(${idx}, 1)" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+          <div class="ci-right">
+            <div class="ci-price mono">${fmt(item.price * item.qty)}</div>
+            <button class="ci-remove" onclick="removeItem(${idx})">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('cart-subtotal').textContent = fmt(subtotal);
+    const shippingLabel = subtotal === 0 ? 'Calculated at checkout' : (subtotal >= 150 ? 'Free' : fmt(9.95));
+    document.getElementById('cart-shipping').textContent = shippingLabel;
+    const shippingCost = subtotal === 0 ? 0 : (subtotal >= 150 ? 0 : 9.95);
+    document.getElementById('cart-total').textContent = fmt(subtotal + shippingCost);
+  }
+
+  function openCart(){
+    document.getElementById('cart-drawer').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart(){
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function checkout(){
+    if(cart.length === 0){
+      showToast('Your bag is empty');
+      return;
+    }
+    showToast('Heading to secure checkout…');
   }
 
   function subscribe(e){
@@ -610,6 +785,8 @@
     e.target.reset();
     return false;
   }
+
+  renderCart();
 
   function toggleFaq(btn){
     const item = btn.closest('.faq-item');
