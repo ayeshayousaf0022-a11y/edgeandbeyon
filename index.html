@@ -842,20 +842,20 @@
     <p>Questions about sizing, orders, or your Founder's Kit? Send us a message and we'll reply within one business day.</p>
   </div>
   <div class="simple-card">
-    <form onsubmit="return submitContact(event)">
+    <form id="contact-form" action="https://formspree.io/f/xaqgryrq" method="POST">
       <div class="form-row">
         <label for="c-name">Name</label>
-        <input id="c-name" type="text" placeholder="Your name" required>
+        <input <input id="c-name" name="name" type="text" placeholder="Your name" required> type="text" placeholder="Your name" required>
       </div>
       <div class="form-row">
         <label for="c-email">Email</label>
-        <input id="c-email" type="email" placeholder="you@example.com" required>
+        <input <input id="c-email" name="email" type="email" placeholder="you@example.com" required> type="email" placeholder="you@example.com" required>
       </div>
       <div class="form-row">
         <label for="c-msg">Message</label>
-        <textarea id="c-msg" placeholder="How can we help?" required></textarea>
+        <textarea <textarea id="c-msg" name="message" placeholder="How can we help?" required></textarea> placeholder="How can we help?" required></textarea>
       </div>
-      <button class="form-submit" type="submit">Send Message</button>
+      <input type="hidden" name="_subject" value="New EDGE Website Contact Form">Send Message</button>
     </form>
     <p class="contact-alt">Or email us directly at <a href="mailto:hello@edgeleather.example" style="text-decoration:underline;">hello@edgeleather.example</a></p>
   </div>
