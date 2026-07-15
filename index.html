@@ -603,7 +603,7 @@
     </div>
     <div class="cta-row">
       <button class="btn btn-primary" onclick="addToCart()">Add to Cart</button>
-      <button class="btn btn-outline" onclick="buyNow()">Buy Now</button>
+      <button class="btn btn-outline" onclick="buyNow(event)">Buy Now</button>
       <button class="btn btn-outline wish-toggle" onclick="toggleWishlist(event)" aria-label="Add to wishlist">
         <svg id="wish-icon-cta" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px; margin-right:6px;"><path d="M12 21s-7.5-4.6-10.1-9.3C.3 8.4 1.7 4.9 5 4c2.1-.6 4.3.3 5.5 2.1a1 1 0 0 0 1.5 0C13.2 4.3 15.4 3.4 17.5 4c3.3.9 4.7 4.4 3.1 7.7C19.5 16.4 12 21 12 21z"/></svg>Wishlist
       </button>
@@ -1009,7 +1009,7 @@
   </div>
   <div style="display:flex; gap:8px;">
     <button class="btn btn-outline" style="padding:12px 18px;" onclick="addToCart()">Add</button>
-    <button class="btn btn-primary" style="padding:12px 18px;" onclick="buyNow()">Buy Now</button>
+    <button class="btn btn-primary" style="padding:12px 18px;" onclick="buyNow(event)">Buy Now</button>
   </div>
 </div>
 
@@ -1035,6 +1035,8 @@
 
 <script>
   const PRODUCT = { id:'atlas-carryall-espresso', name:'The Atlas Carryall', variant:'Espresso Full-Grain Leather', price:245 };
+  // Your Supabase project URL — used to call the create-checkout Edge Function.
+  const SUPABASE_URL = 'https://lupsxhgwtnonpyrhbujy.supabase.co';
   let cart = []; // {id, name, variant, price, qty, isGift}
   let giftClaimed = false;
   let pendingGift = null;
@@ -1129,10 +1131,27 @@
     }
   }
 
-  function buyNow(){
-    addToCart();
-    if(giftClaimed){
-      setTimeout(checkout, 350);
+  async function buyNow(evt){
+    const btn = evt ? evt.currentTarget : null;
+    const originalLabel = btn ? btn.textContent : '';
+    try{
+      if(btn){ btn.disabled = true; btn.textContent = 'Redirecting to checkout…'; }
+
+      const res = await fetch(SUPABASE_URL + '/functions/v1/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: PRODUCT.id, quantity: 1 })
+      });
+
+      if(!res.ok){ throw new Error('Checkout request failed'); }
+      const data = await res.json();
+      if(!data.url){ throw new Error('No checkout URL returned'); }
+
+      window.location.href = data.url; // hand off to Stripe Checkout
+    } catch(err){
+      console.error('buyNow error:', err);
+      showToast('Something went wrong starting checkout — please try again.');
+      if(btn){ btn.disabled = false; btn.textContent = originalLabel; }
     }
   }
 
