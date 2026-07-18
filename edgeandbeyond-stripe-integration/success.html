@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — EDGE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Jost:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#241a13; --coffee:#4a3527; --chestnut:#7a5a3f;
+    --sand:#dcc9a8; --cream:#f4ecdd; --paper:#faf6ee;
+    --brass:#a37f3f; --line: rgba(36,26,19,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--paper); color:var(--espresso); font-family:'Jost', sans-serif; font-weight:300;
+    padding:28px;
+  }
+  .card{
+    max-width:520px; width:100%; text-align:center; background:var(--cream);
+    border:1px solid var(--line); border-radius:4px; padding:52px 40px;
+  }
+  .mark{
+    width:56px; height:56px; margin:0 auto 22px; border-radius:50%;
+    background:var(--coffee); color:var(--cream); display:flex; align-items:center; justify-content:center;
+    font-size:26px;
+  }
+  h1{ font-family:'Fraunces', serif; font-weight:500; font-size:28px; margin:0 0 12px; }
+  p{ line-height:1.7; color:var(--coffee); margin:0 0 8px; }
+  .order-id{ font-family:'Space Mono', monospace; font-size:13px; color:var(--chestnut); margin-top:18px; }
+  a.btn{
+    display:inline-block; margin-top:30px; padding:14px 28px; background:var(--espresso); color:var(--cream);
+    text-decoration:none; border-radius:2px; letter-spacing:0.02em; font-size:14px;
+  }
+  a.btn:hover{ background:var(--coffee); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark">✓</div>
+    <h1>Thank you — your order is confirmed</h1>
+    <p>We've received your payment and your Atlas Carryall is being prepared.</p>
+    <p>A confirmation has been sent to your email.</p>
+    <div class="order-id" id="session-line"></div>
+    <a class="btn" href="https://edgeandbeyond.com/">Continue shopping</a>
+  </div>
+
+  <script>
+    // Purely cosmetic — shows the Stripe session id if present in the URL.
+    // Never trust this value for anything security-sensitive; the order
+    // record itself is written server-side by the stripe-webhook function.
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    if (sessionId) {
+      document.getElementById('session-line').textContent = 'Reference: ' + sessionId;
+    }
+  </script>
+</body>
+</html>
